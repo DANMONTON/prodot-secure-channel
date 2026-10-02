@@ -1,0 +1,13 @@
+{
+  "name": "prodot-secure-channel",
+  "version": "1.0.0",
+  "description": "E2EE secure pairing channel for Prodot Technology Center",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^5.2.1",
+    "ws": "^8.22.0"
+  }
+}

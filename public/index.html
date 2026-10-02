@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prodot Secure Channel // E2EE</title>
+  <style>
+    body { background: #07090e; color: #cbd5e1; font-family: monospace; margin: 0; display: flex; flex-direction: column; height: 100vh; }
+    header { background: #0f172a; padding: 15px 20px; border-bottom: 1px solid #1e293b; display: flex; justify-content: space-between; align-items: center; }
+    h1 { margin: 0; font-size: 16px; color: #38bdf8; letter-spacing: 1px; }
+    .badge { background: #0284c7; color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 11px; }
+    #setup-screen { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 15px; }
+    input { background: #0f172a; color: #38bdf8; border: 1px solid #334155; padding: 12px; border-radius: 6px; font-family: monospace; font-size: 16px; text-align: center; width: 260px; }
+    button { background: #0284c7; color: #fff; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-family: monospace; font-weight: bold; }
+    button:hover { background: #0369a1; }
+    #chat-screen { display: none; flex: 1; flex-direction: column; height: 100%; }
+    #messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
+    .msg { padding: 10px 14px; border-radius: 6px; max-width: 75%; line-height: 1.4; word-break: break-all; }
+    .system { background: #1e293b; color: #94a3b8; align-self: center; font-size: 12px; border: 1px dashed #475569; }
+    .sent { background: #0369a1; color: #e0f2fe; align-self: flex-end; }
+    .received { background: #1e293b; color: #f8fafc; align-self: flex-start; border: 1px solid #334155; }
+    .input-box { padding: 15px 20px; background: #0f172a; border-top: 1px solid #1e293b; display: flex; gap: 10px; }
+    .input-box input { flex: 1; text-align: left; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>PRODOT // SECURE E2EE RELAY</h1>
+    <span class="badge" id="statusBadge">DISCONNECTED</span>
+  </header>
+
+  <!-- SETUP SCREEN -->
+  <div id="setup-screen">
+    <div style="color: #38bdf8; font-size: 14px; margin-bottom: -5px;">ENTER SECURE PAIRING CODE</div>
+    <input type="text" id="roomInput" placeholder="e.g. PRODOT-9921" autocomplete="off" />
+    <button onclick="joinRoom()">Initialize Secure Channel</button>
+  </div>
+
+  <!-- CHAT SCREEN -->
+  <div id="chat-screen">
+    <div id="messages">
+      <div class="msg system">Secure tunnel initialized. Messages are end-to-end encrypted using AES-GCM.</div>
+    </div>
+    <div class="input-box">
+      <input type="text" id="msgInput" placeholder="Type sensitive message..." onkeypress="handleKey(event)" />
+      <button onclick="sendMessage()">Transmit</button>
+    </div>
+  </div>
+
+  <script>
+    let ws = null;
+    let cryptoKey = null;
+    let roomCode = '';
+
+    // Derive a strong AES-GCM encryption key from the pairing code string
+    async function deriveKey(secret) {
+      const enc = new TextEncoder();
+      const keyMaterial = await window.crypto.subtle.importKey(
+        "raw",
+        enc.encode(secret),
+        { name: "PBKDF2" },
+        false,
+        ["deriveKey"]
+      );
+      return window.crypto.subtle.deriveKey(
+        {
+          name: "PBKDF2",
+          salt: enc.encode("prodot-secure-salt-v1"),
+          iterations: 100000,
+          hash: "SHA-256"
+        },
+        keyMaterial,
+        { name: "AES-GCM", length: 256 },
+        false,
+        ["encrypt", "decrypt"]
+      );
+    }
+
+    async function joinRoom() {
+      roomCode = document.getElementById('roomInput').value.trim();
+      if (!roomCode) {
+        alert('Please enter a valid pairing code.');
+        return;
+      }
+
+      // Derive encryption key locally from room code
+      cryptoKey = await deriveKey(roomCode);
+
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      ws = new WebSocket(`${protocol}//${window.location.host}`);
+
+      ws.onopen = () => {
+        ws.send(JSON.stringify({ type: 'join', room: roomCode }));
+      };
+
+      ws.onmessage = async (event) => {
+        const data = JSON.parse(event.data);
+        
+        if (data.type === 'joined') {
+          document.getElementById('setup-screen').style.display = 'none';
+          document.getElementById('chat-screen').style.display = 'flex';
+          document.getElementById('statusBadge').textContent = `ROOM: ${data.room} (${data.peerCount}/2)`;
+          if (data.peerCount > 1) {
+            appendSystemMessage('Peer connected in room.');
+          } else {
+            appendSystemMessage('Waiting for peer to join pairing code...');
+          }
+        } 
+        else if (data.type === 'peer_joined') {
+          document.getElementById('statusBadge').textContent = `ROOM: ${roomCode} (Connected)`;
+          appendSystemMessage('Peer has joined the secure channel.');
+        }
+        else if (data.type === 'peer_left') {
+          appendSystemMessage('Peer disconnected from channel.');
+        }
+        else if (data.type === 'message') {
+          try {
+            const decryptedText = await decryptMessage(data.ciphertext, data.iv);
+            appendMessage(decryptedText, 'received');
+          } catch (e) {
+            appendMessage('[Error: Failed to decrypt message with this pairing code]', 'received');
+          }
+        }
+        else if (data.type === 'error') {
+          alert(data.message);
+        }
+      };
+    }
+
+    async function encryptMessage(plainText) {
+      const enc = new TextEncoder();
+      const iv = window.crypto.getRandomValues(new Uint8Array(12));
+      const ciphertext = await window.crypto.subtle.encrypt(
+        { name: "AES-GCM", iv: iv },
+        cryptoKey,
+        enc.encode(plainText)
+      );
+      return {
+        ciphertext: Array.from(new Uint8Array(ciphertext)),
+        iv: Array.from(iv)
+      };
+    }
+
+    async function decryptMessage(cipherArray, ivArray) {
+      const dec = new TextDecoder();
+      const decrypted = await window.crypto.subtle.decrypt(
+        { name: "AES-GCM", iv: new Uint8Array(ivArray) },
+        cryptoKey,
+        new Uint8Array(cipherArray)
+      );
+      return dec.decode(decrypted);
+    }
+
+    async function sendMessage() {
+      const input = document.getElementById('msgInput');
+      const text = input.value.trim();
+      if (!text || !ws) return;
+
+      try {
+        const encrypted = await encryptMessage(text);
+        ws.send(JSON.stringify({
+          type: 'message',
+          ciphertext: encrypted.ciphertext,
+          iv: encrypted.iv
+        }));
+
+        appendMessage(text, 'sent');
+        input.value = '';
+      } catch (e) {
+        console.error('Encryption error:', e);
+      }
+    }
+
+    function handleKey(e) {
+      if (e.key === 'Enter') sendMessage();
+    }
+
+    function appendMessage(text, type) {
+      const container = document.getElementById('messages');
+      const div = document.createElement('div');
+      div.className = `msg ${type}`;
+      div.textContent = text;
+      container.appendChild(div);
+      container.scrollTop = container.scrollHeight;
+    }
+
+    function appendSystemMessage(text) {
+      const container = document.getElementById('messages');
+      const div = document.createElement('div');
+      div.className = 'msg system';
+      div.textContent = text;
+      container.appendChild(div);
+      container.scrollTop = container.scrollHeight;
+    }
+  </script>
+</body>
+</html>
