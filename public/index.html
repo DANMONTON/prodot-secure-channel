@@ -2,53 +2,55 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Prodot Secure Channel | E2EE VPN</title>
   <meta name="viewport" content="width=1024">
-  <meta name="description" content="End-to-end encrypted 1-to-1 secure communication channel powered by Prodot Technology Center. C.E.O Dan Banda owner of prodot technlogy center for future">
-  <!-- Favicon for Browser Tabs & Google Search -->
-  <link rel="icon" type="image/favicon.png" sizes="192x192" href="favicon.png">
+  <title>Prodot Secure Channel | E2EE VPN</title>
+  <meta name="description" content="End-to-end encrypted 1-to-1 secure communication channel powered by Prodot Technology Center.">
+  <link rel="icon" type="image/png" sizes="192x192" href="favicon.png">
   <link rel="shortcut icon" href="/favicon.png">
   <link rel="apple-touch-icon" href="favicon.png">
-  
-  <!-- Open Graph / Social Sharing Meta Tags -->
   <meta property="og:title" content="Prodot Secure Channel">
   <meta property="og:description" content="Secure, zero-knowledge, end-to-end encrypted messaging channel.">
   <meta property="og:url" content="https://prodot-secure-channel.onrender.com">
   <meta property="og:type" content="website">
-</head>
-  <title>Prodot Secure Channel // E2EE</title>
   <style>
     body { background: #07090e; color: #cbd5e1; font-family: monospace; margin: 0; display: flex; flex-direction: column; height: 100vh; }
-    header { background: #0f172a; padding: 15px 20px; border-bottom: 1px solid #1e293b; display: flex; justify-content: space-between; align-items: center; }
-    h1 { margin: 0; font-size: 16px; color: #38bdf8; letter-spacing: 1px; }
+    header { background: #0f172a; padding: 12px 20px; border-bottom: 1px solid #1e293b; display: flex; justify-content: space-between; align-items: center; }
+    .header-left { display: flex; align-items: center; gap: 10px; }
+    .avatars { display: flex; gap: 4px; font-size: 16px; background: #1e293b; padding: 3px 8px; border-radius: 4px; border: 1px solid #334155; }
+    h1 { margin: 0; font-size: 15px; color: #38bdf8; letter-spacing: 1px; }
     .badge { background: #0284c7; color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 11px; }
     #setup-screen { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 15px; }
-    input { background: #0f172a; color: #38bdf8; border: 1px solid #334155; padding: 12px; border-radius: 6px; font-family: monospace; font-size: 16px; text-align: center; width: 260px; }
-    button { background: #0284c7; color: #fff; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-family: monospace; font-weight: bold; }
+    input[type="text"] { background: #0f172a; color: #38bdf8; border: 1px solid #334155; padding: 10px; border-radius: 6px; font-family: monospace; font-size: 15px; text-align: center; width: 260px; }
+    button { background: #0284c7; color: #fff; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-family: monospace; font-weight: bold; font-size: 13px; }
     button:hover { background: #0369a1; }
-    #chat-screen { display: none; flex: 1; flex-direction: column; height: 100%; }
-    #messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
-    .msg { padding: 10px 14px; border-radius: 6px; max-width: 75%; line-height: 1.4; word-break: break-all; }
-    .system { background: #1e293b; color: #94a3b8; align-self: center; font-size: 12px; border: 1px dashed #475569; }
+    #chat-screen { display: none; flex: 1; flex-direction: column; height: 100%; overflow: hidden; }
+    #messages { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 8px; max-width: 900px; width: 100%; margin: 0 auto; box-sizing: border-box; }
+    .msg { padding: 8px 12px; border-radius: 6px; max-width: 70%; line-height: 1.35; font-size: 13px; word-break: break-word; }
+    .system { background: #1e293b; color: #94a3b8; align-self: center; font-size: 11px; border: 1px dashed #475569; max-width: 90%; text-align: center; }
     .sent { background: #0369a1; color: #e0f2fe; align-self: flex-end; }
     .received { background: #1e293b; color: #f8fafc; align-self: flex-start; border: 1px solid #334155; }
-    .input-box { padding: 15px 20px; background: #0f172a; border-top: 1px solid #1e293b; display: flex; gap: 10px; }
-    .input-box input { flex: 1; text-align: left; }
+    .input-box { padding: 12px 20px; background: #0f172a; border-top: 1px solid #1e293b; display: flex; gap: 8px; max-width: 900px; width: 100%; margin: 0 auto; box-sizing: border-box; align-items: center; }
+    .input-box input[type="text"] { flex: 1; text-align: left; padding: 9px; font-size: 14px; }
+    .file-btn { background: #1e293b; border: 1px solid #334155; color: #38bdf8; padding: 9px 12px; border-radius: 6px; cursor: pointer; font-size: 14px; }
+    .file-btn:hover { background: #334155; }
+    .file-attachment { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; }
+    .file-attachment img { max-width: 220px; max-height: 160px; border-radius: 4px; border: 1px solid #334155; }
+    .file-link { color: #38bdf8; text-decoration: underline; font-size: 12px; word-break: break-all; }
   </style>
 </head>
 <body>
 
   <header>
-    <h1>PRODOT // SECURE E2EE RELAY</h1>
+    <div class="header-left">
+      <div class="avatars" title="Active Secure Handshake">💻 💻</div>
+      <h1>PRODOT // SECURE E2EE RELAY</h1>
+    </div>
     <span class="badge" id="statusBadge">DISCONNECTED</span>
   </header>
 
   <!-- SETUP SCREEN -->
   <div id="setup-screen">
-    <div style="color: #38bdf8; font-size: 14px; margin-bottom: -5px;">ENTER SECURE PAIRING CODE</div>
+    <div style="color: #38bdf8; font-size: 13px; margin-bottom: -5px;">ENTER SECURE PAIRING CODE</div>
     <input type="text" id="roomInput" placeholder="e.g. PRODOT-9921" autocomplete="off" />
     <button onclick="joinRoom()">Initialize Secure Channel</button>
   </div>
@@ -56,10 +58,12 @@
   <!-- CHAT SCREEN -->
   <div id="chat-screen">
     <div id="messages">
-      <div class="msg system">Secure tunnel initialized. Messages are end-to-end encrypted using AES-GCM.</div>
+      <div class="msg system">Secure tunnel initialized. End-to-end encrypted via AES-GCM.</div>
     </div>
     <div class="input-box">
-      <input type="text" id="msgInput" placeholder="Type sensitive message..." onkeypress="handleKey(event)" />
+      <input type="file" id="fileInput" style="display: none;" onchange="handleFileSelect(event)" />
+      <button class="file-btn" onclick="document.getElementById('fileInput').click()" title="Attach File">📎</button>
+      <input type="text" id="msgInput" placeholder="Type encrypted message..." onkeypress="handleKey(event)" />
       <button onclick="sendMessage()">Transmit</button>
     </div>
   </div>
@@ -69,7 +73,6 @@
     let cryptoKey = null;
     let roomCode = '';
 
-    // Derive a strong AES-GCM encryption key from the pairing code string
     async function deriveKey(secret) {
       const enc = new TextEncoder();
       const keyMaterial = await window.crypto.subtle.importKey(
@@ -80,12 +83,7 @@
         ["deriveKey"]
       );
       return window.crypto.subtle.deriveKey(
-        {
-          name: "PBKDF2",
-          salt: enc.encode("prodot-secure-salt-v1"),
-          iterations: 100000,
-          hash: "SHA-256"
-        },
+        { name: "PBKDF2", salt: enc.encode("prodot-secure-salt-v1"), iterations: 100000, hash: "SHA-256" },
         keyMaterial,
         { name: "AES-GCM", length: 256 },
         false,
@@ -100,9 +98,7 @@
         return;
       }
 
-      // Derive encryption key locally from room code
       cryptoKey = await deriveKey(roomCode);
-
       const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
       ws = new WebSocket(`${protocol}//${window.location.host}`);
 
@@ -117,25 +113,23 @@
           document.getElementById('setup-screen').style.display = 'none';
           document.getElementById('chat-screen').style.display = 'flex';
           document.getElementById('statusBadge').textContent = `ROOM: ${data.room} (${data.peerCount}/2)`;
-          if (data.peerCount > 1) {
-            appendSystemMessage('Peer connected in room.');
-          } else {
-            appendSystemMessage('Waiting for peer to join pairing code...');
-          }
+          if (data.peerCount > 1) appendSystemMessage('Peer active in room.');
+          else appendSystemMessage('Waiting for peer...');
         } 
         else if (data.type === 'peer_joined') {
           document.getElementById('statusBadge').textContent = `ROOM: ${roomCode} (Connected)`;
-          appendSystemMessage('Peer has joined the secure channel.');
+          appendSystemMessage('Peer connected securely.');
         }
         else if (data.type === 'peer_left') {
-          appendSystemMessage('Peer disconnected from channel.');
+          appendSystemMessage('Peer disconnected.');
         }
         else if (data.type === 'message') {
           try {
-            const decryptedText = await decryptMessage(data.ciphertext, data.iv);
-            appendMessage(decryptedText, 'received');
+            const decryptedText = await decryptPayload(data.ciphertext, data.iv);
+            const parsed = JSON.parse(decryptedText);
+            appendParsedMessage(parsed, 'received');
           } catch (e) {
-            appendMessage('[Error: Failed to decrypt message with this pairing code]', 'received');
+            appendMessage('[Error: Failed to decrypt incoming payload]', 'received');
           }
         }
         else if (data.type === 'error') {
@@ -144,13 +138,13 @@
       };
     }
 
-    async function encryptMessage(plainText) {
+    async function encryptPayload(payloadStr) {
       const enc = new TextEncoder();
       const iv = window.crypto.getRandomValues(new Uint8Array(12));
       const ciphertext = await window.crypto.subtle.encrypt(
         { name: "AES-GCM", iv: iv },
         cryptoKey,
-        enc.encode(plainText)
+        enc.encode(payloadStr)
       );
       return {
         ciphertext: Array.from(new Uint8Array(ciphertext)),
@@ -158,7 +152,7 @@
       };
     }
 
-    async function decryptMessage(cipherArray, ivArray) {
+    async function decryptPayload(cipherArray, ivArray) {
       const dec = new TextDecoder();
       const decrypted = await window.crypto.subtle.decrypt(
         { name: "AES-GCM", iv: new Uint8Array(ivArray) },
@@ -173,23 +167,75 @@
       const text = input.value.trim();
       if (!text || !ws) return;
 
+      const payload = JSON.stringify({ type: 'text', content: text });
       try {
-        const encrypted = await encryptMessage(text);
-        ws.send(JSON.stringify({
-          type: 'message',
-          ciphertext: encrypted.ciphertext,
-          iv: encrypted.iv
-        }));
-
-        appendMessage(text, 'sent');
+        const encrypted = await encryptPayload(payload);
+        ws.send(JSON.stringify({ type: 'message', ciphertext: encrypted.ciphertext, iv: encrypted.iv }));
+        appendParsedMessage({ type: 'text', content: text }, 'sent');
         input.value = '';
       } catch (e) {
-        console.error('Encryption error:', e);
+        console.error('Transmission error:', e);
       }
+    }
+
+    async function handleFileSelect(event) {
+      const file = event.target.files[0];
+      if (!file || !ws) return;
+
+      const reader = new FileReader();
+      reader.onload = async function (e) {
+        const base64Data = e.target.result;
+        const payload = JSON.stringify({
+          type: 'file',
+          name: file.name,
+          fileType: file.type,
+          data: base64Data
+        });
+
+        try {
+          const encrypted = await encryptPayload(payload);
+          ws.send(JSON.stringify({ type: 'message', ciphertext: encrypted.ciphertext, iv: encrypted.iv }));
+          appendParsedMessage({ type: 'file', name: file.name, fileType: file.type, data: base64Data }, 'sent');
+          event.target.value = '';
+        } catch (err) {
+          console.error('File transmission error:', err);
+        }
+      };
+      reader.readAsDataURL(file);
     }
 
     function handleKey(e) {
       if (e.key === 'Enter') sendMessage();
+    }
+
+    function appendParsedMessage(data, type) {
+      const container = document.getElementById('messages');
+      const div = document.createElement('div');
+      div.className = `msg ${type}`;
+
+      if (data.type === 'text') {
+        div.textContent = data.content;
+      } else if (data.type === 'file') {
+        const attachDiv = document.createElement('div');
+        attachDiv.className = 'file-attachment';
+        
+        if (data.fileType && data.fileType.startsWith('image/')) {
+          const img = document.createElement('img');
+          img.src = data.data;
+          attachDiv.appendChild(img);
+        }
+
+        const a = document.createElement('a');
+        a.href = data.data;
+        a.download = data.name;
+        a.textContent = `📥 Download Attachment: ${data.name}`;
+        a.className = 'file-link';
+        attachDiv.appendChild(a);
+        div.appendChild(attachDiv);
+      }
+
+      container.appendChild(div);
+      container.scrollTop = container.scrollHeight;
     }
 
     function appendMessage(text, type) {
